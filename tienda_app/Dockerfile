@@ -1,5 +1,5 @@
 # 1. Usamos una imagen base oficial de Python ligera (Slim es ideal para producción/dev)
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # 2. Evitamos que Python escriba archivos .pyc y aseguramos que los logs se vean en tiempo real
 ENV PYTHONDONTWRITEBYTECODE 1
