@@ -39,3 +39,14 @@ class CompraAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
             return Response({"error": "Error interno"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class ProductosAPIView(APIView):
+    def get(self, request):
+        return Response({
+            "productos": [
+                {"id": 1, "titulo": "Clean Code", "precio": 25000},
+                {"id": 2, "titulo": "The Pragmatic Programmer", "precio": 30000},
+                {"id": 3, "titulo": "Design Patterns", "precio": 28000},
+            ],
+            "backend": "Django v1"
+        })
