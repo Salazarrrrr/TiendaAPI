@@ -1,44 +1,25 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=tienda_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret_password
+    # ... (configuracion previa)
 
-  web:
+  web_django:  # El Monolito (v1)
     build: .
-    # CAMBIO 1: Usamos Gunicorn en lugar de runserver
-    # 'tienda_project' debe ser el nombre de la carpeta donde esta su wsgi.py
     command: gunicorn tienda_project.wsgi:application --bind 0.0.0.0:8000
-
-    volumes:
-      - .:/app
     depends_on:
       - db
-    environment:
-      - DB_NAME=tienda_db
-      - DB_USER=postgres
-      - DB_PASSWORD=secret_password
-      - DB_HOST=db
-      - DB_PORT=5432
 
-    # NOTA: Ya no hay seccion 'ports' aqui. Django esta aislado.
-
-  # CAMBIO 2: Agregamos el servicio Nginx
-  nginx:
-    image: nginx:1.25-alpine
+  pagos_flask:  # El Microservicio (v2) - EL ESTRANGULADOR
+    build: ./microservicio_pagos
     ports:
-      - "80:80"  # Nginx es el unico que da la cara a internet
+      - "5000:5000"  # Solo para pruebas iniciales, luego lo cerraremos
+
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "80:80"
     volumes:
-      # Inyectamos nuestro archivo de configuracion en el contenedor
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - web
-
-volumes:
-  postgres_data:
+      - web_django
+      - pagos_flask
